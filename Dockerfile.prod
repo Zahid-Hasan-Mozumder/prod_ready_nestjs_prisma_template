@@ -1,0 +1,31 @@
+# Use the official lightweight Node.js 25 Alpine image as the base image
+FROM node:25-alpine
+
+# Remove all files from the app directory
+RUN rm -rf /app/*
+
+# Set the working directory inside the container to /app
+WORKDIR /app
+
+# Copy package.json and package-lock.json (if exists) to the working directory
+COPY package*.json ./
+
+# Install all dependencies specified in package.json
+RUN npm install
+
+# Copy the rest of the application's source code to the working directory
+COPY . .
+
+# Build the NestJS application (this will compile the TypeScript source into the dist/ directory)
+RUN npm run build
+
+# Remove the source code directory to reduce image size and prevent source exposure in production
+RUN rm -rf ./src
+
+# Whether you exposed or not, the port will be always the port defined in your local code
+# It just gives good understanding about the port where the code is running inside the container
+# But, if you expose, then it must be equal to your local code's port number
+EXPOSE 4000
+
+# Start the NestJS application in production mode
+CMD ["npm", "run", "start:prod"]

@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: nestjs_prisma_template
+    restart: unless-stopped
+    ports:
+      - 5000:4000
+    # In production, do not mount source code as a volume
+    # Remove volumes for prod: code and node_modules are within the image
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - DATABASE_URL=postgresql://admin:admin@db:5432/nestjs_prisma_prod
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:15-alpine
+    container_name: nestjs_db_prod
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=nestjs_prisma_prod
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    ports:
+      - 5435:5432
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d nestjs_prisma_prod"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_prod_data:
+    driver: local

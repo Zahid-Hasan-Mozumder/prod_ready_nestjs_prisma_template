@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nestjs_prisma_template
+    restart: unless-stopped
+    ports:
+      - 5000:4000
+    volumes:
+      # Mount source code for hot reload
+      - .:/app
+      # Exclude node_modules from host to avoid conflicts
+      - /app/node_modules
+      # Exclude generated files
+      - /app/generated
+    environment:
+      - NODE_ENV=development
+      - PORT=4000
+      - DATABASE_URL=postgresql://admin:admin@db:5432/nestjs_prisma_dev
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:15-alpine
+    container_name: nestjs_db_dev
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=nestjs_prisma_dev
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    ports:
+      - 5435:5432
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d nestjs_prisma_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_dev_data:
+    driver: local
