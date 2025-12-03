@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   app:
-    image: nestjs_prisma_template
     build:
       context: .
       dockerfile: Dockerfile.prod
