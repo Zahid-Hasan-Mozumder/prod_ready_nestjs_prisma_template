@@ -16,9 +16,6 @@ RUN npm install
 # Copy the rest of the application's source code to the working directory
 COPY . .
 
-# Generate Prisma client
-RUN npx prisma generate
-
 # Build the NestJS application (this will compile the TypeScript source into the dist/ directory)
 RUN npm run build
 
