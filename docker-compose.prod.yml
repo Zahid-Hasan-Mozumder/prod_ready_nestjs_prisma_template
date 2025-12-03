@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    image: ${DOCKER_HUB_USERNAME}/${DOCKER_HUB_IMAGE_NAME}:${DOCKER_HUB_IMAGE_TAG}
+    image: nestjs_prisma_template
     build:
       context: .
       dockerfile: Dockerfile.prod
@@ -16,9 +16,6 @@ services:
       - NODE_ENV=production
       - PORT=4000
       - DATABASE_URL=postgresql://admin:admin@db:5432/nestjs_prisma_prod
-      - DOCKER_HUB_USERNAME=${DOCKER_HUB_USERNAME}
-      - DOCKER_HUB_IMAGE_NAME=${DOCKER_HUB_IMAGE_NAME}
-      - DOCKER_HUB_IMAGE_TAG=${DOCKER_HUB_IMAGE_TAG}
     depends_on:
       db:
         condition: service_healthy
