@@ -1,5 +1,5 @@
 # Use the official lightweight Node.js 25 Alpine image as the base image
-FROM node:24-alpine
+FROM node:25-alpine
 
 # Remove all files from the app directory
 RUN rm -rf /app/*
