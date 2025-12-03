@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
+      args:
+        DATABASE_URL: ${DATABASE_URL}
     container_name: nestjs_prisma_template
     restart: unless-stopped
     ports:
