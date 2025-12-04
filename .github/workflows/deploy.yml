@@ -30,4 +30,4 @@ jobs:
           password: ${{ env.DOCKER_HUB_TOKEN }}
 
       - name: Push the image into Docker Hub
-        run: docker compose -f docker-compose.prod.yml push
+        run: docker push ${{ env.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
