@@ -39,6 +39,19 @@ jobs:
           username: ${{ secrets.AWS_EC2_USERNAME }}
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
           script: |
+            # Update packages
+            sudo yum update -y
+
+            # Install Docker
+            sudo yum install -y docker
+
+            # Start Docker
+            sudo systemctl start docker
+            sudo systemctl enable docker
+
+            # Add user to docker group
+            sudo usermod -aG docker ec2-user
+
             # Pull the latest image from Docker Hub
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             
@@ -54,3 +67,6 @@ jobs:
             
             # Cleanup old images
             docker image prune -af
+
+            # Log out and back in
+            exit
