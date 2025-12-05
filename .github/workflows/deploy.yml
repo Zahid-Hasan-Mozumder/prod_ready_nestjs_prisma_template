@@ -49,24 +49,22 @@ jobs:
             sudo systemctl start docker
             sudo systemctl enable docker
 
-            # Add user to docker group
-            sudo usermod -aG docker ec2-user
+            # Add user to docker group for future sessions
+            sudo usermod -aG docker ${{ secrets.AWS_EC2_USERNAME }}
 
-            # Pull the latest image from Docker Hub
-            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            # Pull the latest image from Docker Hub (use sudo for current session)
+            sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             
             # Stop and remove the existing container
-            docker stop ${{ env.IMAGE_NAME }} || true
-            docker rm ${{ env.IMAGE_NAME }} || true
+            sudo docker stop ${{ env.IMAGE_NAME }} || true
+            sudo docker rm ${{ env.IMAGE_NAME }} || true
             
             # Run the container
-            docker run -d \
+            sudo docker run -d \
               --name ${{ env.IMAGE_NAME }} \
               -p 5000:4000 \
+              -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             
             # Cleanup old images
-            docker image prune -af
-
-            # Log out and back in
-            exit
+            sudo docker image prune -af
